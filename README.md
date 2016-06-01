@@ -59,7 +59,46 @@ If you do not see one or both of those events, please [let us know about it](../
 
 ### Tasks
 
-The following tasks are registered on the `file` generator.
+#### [generate file](generator.js#L46)
+
+Creates a task for generating a single file for each `view` passed on `options.views`. If `options.views` is undefined, the `templates` collection is used.
+
+**Params**
+
+* `options` **{Object}**
+
+**Example**
+
+```js
+var file = require('generate-file');
+
+// use as a plugin
+var generate = require('generate');
+var app = generate();
+app.template('license', {contents: fs.readFileSync('LICENSE')});
+app.use(file());
+
+app.generate('license', function(err) {
+  if (err) return console.error(err);
+});
+
+// use as a plugin in your generator
+module.exports = function(app) {
+  app.use(file());
+  // do other generator stuff
+};
+
+// use as a sub-generator
+module.exports = function(app) {
+  app.register('foo', file());
+  // do other generator stuff
+
+  app.task('default', function(cb) {
+    // run task `bar` on sub-generator `foo`
+    app.generate('foo:bar', cb);
+  });
+};
+```
 
 ***
 
